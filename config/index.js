@@ -15,6 +15,6 @@ var gameConfig = []
 gameConfig[7] = seven
 
 module.exports = {
-    gameConfig: Config,
+    gameConfig: gameConfig,
     deleteConfig: deleteConfig
 }

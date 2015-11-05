@@ -18,7 +18,8 @@ router.get('/', function(req, res, next) {
 
 router.post('/wechat', wechat(config, wechat.text(function(message, req, res, next) {
     var content = message.Content
-    if(!content.isNumber) {
+    if(isNaN(content)) {
+	
         if(allConfig.deleteConfig[content]) {
             Game.remove({count:allConfig.deleteConfig[content]}, function(err, game) {
                 res.reply({
@@ -32,6 +33,7 @@ router.post('/wechat', wechat(config, wechat.text(function(message, req, res, ne
                 content: '别乱玩，会出事的'
             })
         }
+	return
     }
     var content = parseInt(message.Content)
      if(allConfig.gameConfig[content]) {
