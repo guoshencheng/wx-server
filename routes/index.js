@@ -83,6 +83,8 @@ var updateGame = function(game, message, cb) {
     var rn = parseInt(Math.random() * arr.length)
     var char = arr[rn]
     var players = game.players
+    arr.splice(rn, 1)
+    game.characters = arr
     players.push({
         nickname:message.FromUserName,
         character: char
