@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var wechart = require('wechat')
+var wechat = require('wechat')
 
 var config = {
     token: 'guoshencheng',
@@ -13,8 +13,11 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-router.get('/wechat', wechart(config, function(req, res, next) {
 
+
+router.get('/wechat', wechat(config, function(req, res, next) {
+    var message = req.weixin
+    console.log(message)
 }))
 
 module.exports = router;
