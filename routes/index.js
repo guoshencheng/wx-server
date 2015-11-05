@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var wechat = require('wechat')
+var allConfig = require('../config')
+var models = require('../models')
+var Game = models.Game
 
 var config = {
     token: 'guoshencheng',
@@ -14,15 +17,121 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/wechat', wechat(config, wechat.text(function(message, req, res, next) {
-     if(message.Content == 'langren') {
-        res.reply({
-            type: 'text',
-            content:'close your eyes'
-        })
+    var content = message.Content
+    if(!content.isNumber) {
+        if(allConfig.deleteConfig[content]) {
+            Game.remove({count:allConfig.deleteConfig[content]}, function(err, game) {
+                res.reply({
+                    type: 'text',
+                    content: '游戏重置'
+                })
+            })
+        } else {
+            res.reply({
+                type: 'text',
+                content: '别乱玩，会出事的'
+            })
+        }
     }
+    var content = parseInt(message.Content)
+     if(allConfig.gameConfig[content]) {
+        Game.findOne({count:content}, function(err, game) {
+            if(!game) {
+                newGame(game, message, function(g, char) {
+                    res.reply({
+                        type: 'text',
+                        content: '你是 \'' + char + ' \''
+                    })
+                })
+            } else {
+                var arr = game.characters
+                if(arr.length == 0) {
+                    res.reply({
+                        type: 'text',
+                        content: '人数已经满了'
+                    })
+                } else if(checkIfExist(arr, message.FromUserName)){
+                    res.reply({
+                        type: 'text',
+                        content: '你已经被分配身份了'
+                    })
+                } else {
+                    updateGame(game, message, function(g, char) {
+                        res.reply({
+                            type: 'text',
+                            content: '你是 \'' + char + ' \''
+                        })
+                    })
+                }
+            }
+        })
+     } else {
+         res.reply({
+            content: '没有这个人数的配置',
+             type: 'text'
+         })
+     }
 })))
 
 router.get('/wechat', wechat(config, wechat.text(function(message, req, res, next) {
 })))
+
+var updateGame = function(game, message, cb) {
+    var arr = game.characters
+    var rn = parseInt(Math.random() * arr.length)
+    var char = arr[rn]
+    var players = game.players
+    players.push({
+        nickname:message.FromUserName,
+        character: char
+    })
+    game.players = players
+    game.save(function(err, g) {
+        cb(g, char)
+    })
+}
+
+var checkIfExist = function(arr, name) {
+    var i = false
+    for(var k in arr) {
+        var p = arr[k]
+        if (p.nickname == name) {
+            i = true
+            break
+        }
+    }
+    return i
+}
+
+var newGame = function(game, message, cb) {
+    var content = parseInt(message.Content)
+    var ca = allConfig.gameConfig[content]
+    var arr = transformCharacter(ca)
+    var rn = parseInt(Math.random() * arr.length)
+    var char = arr[rn]
+    arr.splice(rn, 1)
+    game = new Game({
+        count: content,
+        characters: arr,
+        players:[{
+            nickname: message.FromUserName,
+            character: char
+        }]
+    })
+    game.save(function(err, g) {
+        cb(g, char)
+    })
+}
+
+var transformCharacter = function(ca) {
+    var arr = [];
+    for(var k in ca) {
+        var count = ca[k]
+        for (var i = 0;i < count; i ++) {
+            arr.push(k)
+        }
+    }
+    return arr
+}
 
 module.exports = router;
