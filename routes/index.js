@@ -14,7 +14,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/wechat', wechat(config, wechat.text(function(message, req, res, next) {
-    if(message.content == '狼人') {
+     if(message.Content == 'langren') {
         res.reply({
             type: 'text',
             content:'close your eyes'
