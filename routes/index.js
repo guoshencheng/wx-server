@@ -52,7 +52,7 @@ router.post('/wechat', wechat(config, wechat.text(function(message, req, res, ne
                         type: 'text',
                         content: '人数已经满了'
                     })
-                } else if(checkIfExist(arr, message.FromUserName)){
+                } else if(checkIfExist(game.players, message.FromUserName)){
                     res.reply({
                         type: 'text',
                         content: '你已经被分配身份了'
@@ -97,7 +97,7 @@ var updateGame = function(game, message, cb) {
 
 var checkIfExist = function(arr, name) {
     var i = false
-    for(var k in arr) {
+    for(var k = 0; k < arr.length; k++) {
         var p = arr[k]
         if (p.nickname == name) {
             i = true
