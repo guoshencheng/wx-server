@@ -13,10 +13,11 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-
+router.post('/wechat', wechat(config, wechat.text(function(message, req, res, next) {
+    console.log(message)
+})))
 
 router.get('/wechat', wechat(config, wechat.text(function(message, req, res, next) {
-    console.log(message)
 })))
 
 module.exports = router;
