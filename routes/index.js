@@ -86,7 +86,7 @@ var updateGame = function(game, message, cb) {
     arr.splice(rn, 1)
     game.characters = arr
     players.push({
-        nickname:message.FromUserName,
+        nickName:message.FromUserName,
         character: char
     })
     game.players = players
@@ -99,7 +99,7 @@ var checkIfExist = function(arr, name) {
     var i = false
     for(var k = 0; k < arr.length; k++) {
         var p = arr[k]
-        if (p.nickname == name) {
+        if (p.nickName == name) {
             i = true
             break
         }
@@ -118,7 +118,7 @@ var newGame = function(game, message, cb) {
         count: content,
         characters: arr,
         players:[{
-            nickname: message.FromUserName,
+            nickName: message.FromUserName,
             character: char
         }]
     })
