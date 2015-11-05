@@ -15,9 +15,8 @@ router.get('/', function(req, res, next) {
 
 
 
-router.get('/wechat', wechat(config, function(req, res, next) {
-    var message = req.weixin
+router.get('/wechat', wechat(config, wechat.text(function(message, req, res, next) {
     console.log(message)
-}))
+})))
 
 module.exports = router;
